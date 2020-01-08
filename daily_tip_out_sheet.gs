@@ -1,11 +1,8 @@
 function onOpen(e) {
  var menu = SpreadsheetApp.getUi().createMenu('Scripts')
  menu.addItem('TransferData', 'TransferData')
- //.addSeparator()
- //.addSubMenu(SpreadsheetApp.getUi().createMenu('Sub Menu')
- //.addItem('One sub-menu item', 'subFunction1')
- //.addItem('Another sub-menu item', 'subFunction2'))
  .addToUi(); 
+
 };
 
 
@@ -15,12 +12,17 @@ function TransferData(){
   var lastColumn = rangeData.getLastColumn();
   var lastRow = rangeData.getLastRow();
   var searchRange = sheet.getRange(1,1, lastRow, lastColumn);
+   Logger.log('LR '+ lastRow);
+   Logger.log('LC ' + lastColumn);
   var cell = searchRange.getValues();
-  for(i = 1; i < lastColumn; i++)
-  {
-    if(cell[i][1] == true)
+  for(var i = 1; i < lastRow; i++){
+    if(cell[i][1] == true){
       addTips(cell[i][0],cell[1][12],cell[i][3],cell[i][4],cell[i][5],cell[i][6],cell[i][7],cell[i][8],cell[i][9],cell[i][10],cell[i][11],cell[i][2]);
+      Logger.log('Done3');
+     }
+      Logger.log(cell[i][0]);
   }
+   Logger.log('DoneYYYY');
   return 0;
 };
 
@@ -44,6 +46,7 @@ function addTips(name, Date, Cash, Charge, Total, Host, Expo, Bar, Kit, Out, Hom
      sheet.appendRow(['', Date, Cash, Charge, Total, Host, Expo, Bar, Kit, Out, Home, Pos]);
    }
    UpdateYearly(name);
+   Logger.log('Done2');
    return 0;
 };
 
@@ -58,12 +61,14 @@ function UpdateYearly(name){
    var lastRow = rangeData.getLastRow();
    var searchRange = sheet.getRange(1,1, lastRow, lastColumn);
    var cell = searchRange.getValues();
+   Logger.log(name);
    sendToYearly(name, cell[1][2],cell[1][3],cell[1][4], cell[1][5], cell[1][6], cell[1][7], cell[1][8], cell[1][9], cell[1][10]);
+    Logger.log('Done1');
    return 0;
 };
 
-function sendToYearly(name, Cash, Charge, Total, Host, Expo, Bar, Kit, Out, Home){
-  var value = [name, Cash, Charge, Total, Host, Expo, Bar, Kit, Out, Home];
+function sendToYearly(name, TCash, TCharge, TTotal, THost, TExpo, TBar, TKit, TOut, THome){
+  var values = [name, TCash, TCharge, TTotal, THost, TExpo, TBar, TKit, TOut, THome];
   var ss = SpreadsheetApp.openByUrl('https://docs.google.com/spreadsheets/d/1po8BFkXjKHjyyxA_3eorUThfBo4RVpMfEMIVf8Nif0Y/edit#gid=1629813004');
   var dateObj = new Date();
   var year = dateObj.getFullYear();
@@ -72,20 +77,20 @@ function sendToYearly(name, Cash, Charge, Total, Host, Expo, Bar, Kit, Out, Home
   var lastColumn = sheet.getLastColumn();
   var SheetArray = sheet.getSheetValues(2, 1, 10, 10);
   Logger.log(SheetArray[0][0]);
-  Logger.log(value[2]);
-  for(i =1; i < lastColumn; i++){
-
+  Logger.log("TCharge = " + values[2]);
+  for(var i = 1; i < lastColumn; i++){
+      Logger.log("Sheet Array " + i + " = " + SheetArray[i - 1][0]);
      if(SheetArray[i - 1][0] == name) {
        
-       for(j = 1; j < lastColumn; j++){
+       for(var j = 1; j < lastColumn; j++){
        sheet.getRange(i + 1,j+1,lastRow,lastColumn).activate();
-       sheet.getCurrentCell().setValue(value[j]);
+       sheet.getCurrentCell().setValue(values[j]);
        }
        i = lastColumn;
      }
      
     }
-    
+     Logger.log('END');
     return 0;
   
 };
